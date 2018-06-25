@@ -2,7 +2,6 @@ from ..app import db
 
 
 
-
 # On crée notre modèle
 class Edition(db.Model):
     edition_id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True, autoincrement=True)
@@ -54,7 +53,7 @@ class Edition(db.Model):
     edition_dedication = db.Column(db.Text)
     edition_reference = db.Column(db.Text)
     edition_citation = db.Column(db.Integer)
-    exemplaire = db.relationship("Exemplaire", back_populates="edition", lazy='dynamic')
+    exemplaire = db.relationship("Exemplaire", back_populates="edition")
     reference = db.relationship("Reference", back_populates="edition")
     citation = db.relationship("Citation", back_populates="edition")
     digital = db.relationship("Digital", back_populates="edition")
@@ -214,20 +213,30 @@ class Edition(db.Model):
             if valeur and len(valeur) > 0
         }
 
+        joined = set()
         filtres = []
+
         if "title" in champs:
             filtres.append(Edition.edition_short_title.like("%{}%".format(champs["title"])))
         if "auteur" in champs:
             filtres.append(Edition.edition_author_first.like("%{}%".format(champs["auteur"])))
         if "date" in champs:
             filtres.append(Edition.edition_cleanDate.like("%{}%".format(champs["date"])))
+
         if "possesseur" in champs:
-            filtres.append(db.session.query(Edition).join(Edition.exemplaire).join(Exemplaire.provenance).filter(
-                Provenance.provenance_possesseur.like("%{}%".format(champs["possesseur"]))))
+            joined.add(Edition.exemplaire)
+            joined.add(Exemplaire.provenance)
+            filtres.append(
+                Provenance.provenance_possesseur_formeRejetee.like("%{}%".format(champs["possesseur"]))
+            )
         if "begin_date" in champs and "end_date" in champs:
             filtres.append(Edition.edition_cleanDate.between(champs["begin_date"], champs["end_date"]))
 
-        return db.session.query(Edition).filter(
+        query = db.session.query(Edition)
+        for join in joined:
+            query = query.join(join)
+
+        return query.filter(
             db.and_(*filtres)  # db.and_(*[x==1, y==2])  # db.and_(x==1, y==2)
         )
 

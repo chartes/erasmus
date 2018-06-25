@@ -16,7 +16,9 @@
         <h5>[{{issue.edition_uniform_title}}]</h5>
         {% endif %}
         <p><b>Auteur principal:</b>  {{issue.edition_author_first}}</p>
+        {%if issue.edition_author_second%}
         <p><b>Auteur(s) secondaire(s):</b> {{issue.edition_author_second}}</p>
+        {%endif%}
 <div class="row" >
     <div class="col-8 col-sm-8">
         <table >
@@ -66,10 +68,14 @@
                 <td> {{issue.edition_collator_format}}</td>
             </tr>
             {% endif %}
+            {% for citation in citations %}
+            {% if citation.citation_dbname=="Erasmus Online" %}
             <tr>
-                <td width="130"><b>№ dans la base:</b></td>
-                <td> {{issue.edition_sn}}</td>
+                <td width="130"><b>№ dans "Erasmus Online":</b></td>
+                <td> {{citation.citation_dbnumber}}</td>
             </tr>
+            {% endif %}
+            {%endfor%}
             </table>
             <table>
                 <tr>
@@ -140,14 +146,16 @@
         </table>
 
         <table>
+
             <tr>
                 <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">EXEMPLAIRES</h4>
             </tr>
+            {%if exemplaires%}
             <tr>
-                <td width="130"><b>PAYS</b></td>
-                <td width="130"><b>VILLE</b></td>
-                <td width="130"><b>BIBLIOTHÈQUE</b></td>
-                <td width="130"><b>COTE</b></td>
+                <td width="100"><b>PAYS</b></td>
+                <td width="100"><b>VILLE</b></td>
+                <td width="200"><b>BIBLIOTHÈQUE</b></td>
+                <td width="120"><b>COTE</b></td>
                 <td width="130"><b>LIEN VERS UNE NUMÉRISATION</b></td>
             </tr>
             {% for exemplair in exemplaires %}
@@ -162,22 +170,53 @@
         height="35" border="0" alt="lien"> </a></td>
             </tr>
             {% endfor %}
+             {%else%}
+            <p>Il n'y a pas d'exemplaires connus</p>
+            {%endif%}
         </table>
- <p><a class="btn btn-outline-info" role="button" href="{{url_for('ajout_exemplaire', identifier = issue.edition_id)}}">Ajout exemplaire</a></p>
-    <table>
-            <tr>
+ <p><a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('ajout_exemplaire', identifier = issue.edition_id)}}">Ajout exemplaire</a></p>
+
+
                 <h4 style=" margin-top: 1.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">CITATION</h4>
-            </tr>
+        {%if citations%}
 
         {% for citation in citations %}
-        <tr>
+
+
+  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#multiCollapseExample{{citation.citation_id}}" aria-expanded="false" aria-controls="multiCollapseExample{{citation.citation_id}}">{{citation.citation_dbname}}</button>
+
+
+<div class="row">
+  <div class="col">
+    <div class="collapse multi-collapse" id="multiCollapseExample{{citation.citation_id}}">
+      <div class="card card-body">
+<table>
+    <tr><td width="50">{{citation.citation_dbname}}</td>
+        <td width="100">{{citation.citation_dbnumber}}</td>
+        <td width="600"> <a href="{{citation.citation_url}}">{{citation.citation_url}}</a></td>
+        <td width="20"><a title="modifier" href="{{url_for('modif_citation', citation_id=citation.citation_id)}}"><img src="{{url_for("static", filename="images/edit.png")}}" width="15"
+        height="15" border="0" alt="modifier"> </a> </td>
+        <td width="20"><a title="supprimer" href="{{url_for('suppression_citation', citation_id=citation.citation_id)}}"><img src="{{url_for("static", filename="images/trash.png")}}" width="15"
+            height="15" border="0" alt="supprimer"> </a></td></tr></table>
+         <!-- <a style="width: 20%; height: 2em;" class="btn btn-outline-primary btn-sm" href="{{url_for('modif_citation', citation_id=citation.citation_id)}}" role="button">Modifier</a></button>
+           <a style="width: 20%; height: 2em;" class="btn btn-outline-danger btn-sm" href="{{ url_for('suppression_citation', citation_id=citation.citation_id) }}" role="button">Supprimer</a> -->
+
+      </div>
+    </div>
+  </div>
+
+</div>
+      <!--  <tr>
             <td width="130", valign="top">{{citation.citation_dbname}}</td>
             <td width="130", valign="top">{{citation.citation_dbnumber}}</td>
             <td width="130", valign="top"><a href="{{citation.citation_url}}">{{citation.citation_url}}</a></td>
         <td width="100"><a class="btn btn-outline-primary btn-sm" href="{{url_for('modif_citation', citation_id=citation.citation_id)}}" role="button">Modifier</a></td>
-            <td width="100"><a class="btn btn-outline-danger btn-sm" href="{{ url_for('suppression_citation', citation_id=citation.citation_id) }}" role="button">Supprimer</a></td></tr>
+            <td width="100"><a class="btn btn-outline-danger btn-sm" href="{{ url_for('suppression_citation', citation_id=citation.citation_id) }}" role="button">Supprimer</a></td></tr>-->
         {% endfor %}
-    </table>
+        {%else%}
+        <p>Il n'y a pas de citations</p>
+        {%endif%}
+
                 <p style="padding-top: 45px;"><a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('ajout_citation', edition_id = issue.edition_id)}}">Ajout citation</a></p>
         </div>
     {% if issue.edition_urlImage %}
@@ -186,12 +225,11 @@
     <img src="{{issue.edition_urlImage}}" width="250"
         height="100" border="0" alt="éditions">
 </div>
-    {%if issue.edition_urlImage == "None"%}
+    {%elif issue.edition_urlImage == "None"%}
     <div class="col-4 col-sm-4">
     <img src="{{url_for("static", filename="images/erasmus.jpeg")}}" width="450"
         height="650" border="0" alt="Erasmus Desiderius">
 </div>
-     {%endif%}
     {%else%}
 
 <div class="col-4 col-sm-4">
@@ -201,31 +239,48 @@
     {% endif %}
 </div>
 <h4 style=" margin-top: 0.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">RÉFÉRENCE(S) BIBLIOGRAPHIQUE(S)</h4>
-    <table>
 
+    <table>
+{%if references%}
        <tr>
-           <td width="150"><b>AUTEUR(S)</b></td>
+           <td width="180"><b>AUTEUR(S)</b></td>
            <td width="250"><b>TITRE</b></td>
            <td width="150"><b>IMPRINT</b></td>
            <td width="150"><b>LIEN</b></td>
            <td width="100"><b>PAGE</b></td>
            <td width="100"><b>VOLUME</b></td>
-       </tr>
+       </tr> </table>
     {% for reference in references %}
-
-    <tr>
-        <td valign="top">{{reference.bibliographie.bibliographie_author}}</td>
-        <td valign="top">{{reference.bibliographie.bibliographie_title}}</td>
-        <td valign="top">{{reference.bibliographie.bibliographie_imprint}}</td>
-        <td valign="top">{{reference.bibliographie.bibliographie_URLLink}}</td>
-        <td valign="top">{{reference.reference_page}}</td>
-        <td valign="top">{{reference.reference_volume}}</td>
+ <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#multiCollapseExample{{reference.reference_id}}" aria-expanded="false" aria-controls="multiCollapseExample{{reference.reference_id}}">{{reference.bibliographie.bibliographie_code}}</button>
+   <div class="row">
+  <div class="col">
+    <div class="collapse multi-collapse" id="multiCollapseExample{{reference.reference_id}}">
+      <div class="card card-body">
+    <table>
+          <tr>
+        <td width="150" valign="top">{{reference.bibliographie.bibliographie_author}}</td>
+        <td width="250" valign="top">{{reference.bibliographie.bibliographie_title}}</td>
+        <td width="150" valign="top">{{reference.bibliographie.bibliographie_imprint}}</td>
+        <td width="150" valign="top">{{reference.bibliographie.bibliographie_URLLink}}</td>
+        <td width="100" valign="top">{{reference.reference_page}}</td>
+        <td width="100" valign="top">{{reference.reference_volume}}</td>
 
         <td><a class="btn btn-outline-primary btn-sm" href="{{url_for('modif_reference', reference_id=reference.reference_id)}}" role="button">Modifier</a></td>
-        <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('suppression_reference', reference_id=reference.reference_id) }}" role="button">Supprimer</a></td></tr>
+        <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('suppression_reference', reference_id=reference.reference_id) }}" role="button">Supprimer</a></td></tr></table>
+
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
     {% endfor %}
-<td><a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('ajout_reference', edition_id = issue.edition_id)}}">Ajout reference</a></td>
-    </table>
+         {%else%}
+        <p>Il n'y a pas de références bibliographiques</p>
+         {%endif%}
+<a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('ajout_reference', edition_id = issue.edition_id)}}">Ajout reference</a>
+
 
 
         {% else %}

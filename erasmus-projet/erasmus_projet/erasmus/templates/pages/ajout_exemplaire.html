@@ -100,17 +100,23 @@
   </div>
 <div class="form-group row">
     <label for="recueilFactice" class="col-sm-2 col-form-label">Recueil factice</label>
-    <div class="col-sm-6">
-      <input type="text" class="form-control" id="recueilFactice" placeholder="recueilFactice" name="recueilFactice">
-    </div>
-  </div>
-<div class="form-group row">
-    <label for="reliureXVI" class="col-sm-2 col-form-label">Reliure XVIe</label>
-    <div class="col-sm-6">
-      <input type="text" class="form-control" id="reliureXVI" placeholder="reliureXVI" name="reliureXVI">
+    <div class="input-group">
+     <select class="selectpicker form-control" id="recueilFactice" name="recueilFactice">
+       <option>oui</option>
+        <option>non</option>
+     </select>
     </div>
   </div>
 
+<div class="form-group row">
+    <label for="reliureXVI" class="col-sm-2 col-form-label">Reliure XVIe</label>
+    <div class="input-group">
+     <select class="selectpicker form-control" id="reliureXVI" name="reliureXVI">
+       <option>oui</option>
+        <option>non</option>
+     </select>
+    </div>
+  </div>
 
   <div>
     <button type="submit" class="btn btn-primary">Enregistrer</button>

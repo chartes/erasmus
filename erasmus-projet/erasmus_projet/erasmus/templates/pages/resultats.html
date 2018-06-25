@@ -1,0 +1,46 @@
+{% extends "conteneur.html" %}
+
+{% block titre %}| {{titre}}{%endblock%}
+
+{% block corps %}
+
+    <h1 class="mb-2">{{titre}}</h1>
+    {% if resultats.total > 0 %}
+        <p>Il y a {{resultats.total}} édition(s) qui répond(ent) à votre requête :</p>
+         <table>
+                {% for issue in resultats.items %}
+                <tr>
+                    <td width="890"><a href="{{url_for('issue', edition_id=issue.edition_id)}}">{{issue.edition_short_title}}</a></td>
+                    <td width="100" valign="top">{{issue.edition_displayDate}}</td>
+                    <td width="100" valign="top">{{issue.edition_place}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+    <nav aria-label="research-pagination">
+      <ul class="pagination">
+        {%- for page in resultats.iter_pages() %}
+            {% if page %}
+
+              {% if page != resultats.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{url_for("recherche_rapide", keyword=keyword, page=page) }}">{{page}}</a>
+                </li>
+              {% else %}
+                <li class="page-item active disabled">
+                  <a class="page-link">{{page}} <span class="sr-only">(actuelle)</span></a>
+                </li>
+              {% endif %}
+
+            {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link">...</a>
+                </li>
+            {% endif %}
+
+        {%- endfor %}
+      </ul>
+    {% else %}
+      <p class="mt-5 mb-2" style="font-size : 20px">Aucun résultat</p>
+    </nav>
+    {% endif %}
+{% endblock %}

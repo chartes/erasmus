@@ -40,8 +40,15 @@ def all_issues():
 
 @app.route("/exemplaires_par_possesseur")
 def exemplaires_par_possesseur():
-    provenances=Provenance.query.order_by(Provenance.provenance_possesseur)
-    return render_template("pages/exemplaires_par_possesseur.html", nom="Erasmus", provenances=provenances)
+    page = request.args.get("page", 1)
+
+    if isinstance(page, str) and page.isdigit():
+        page = int(page)
+    else:
+        page = 1
+    provenances=Provenance.query.order_by(Provenance.provenance_possesseur).paginate(page=page, per_page=EDITION_PAR_PAGE)
+
+    return render_template("pages/exemplaires_par_possesseur.html", nom="Erasmus", provenances=provenances, page=page)
 
 
 
@@ -637,6 +644,33 @@ def recherche():
     # On préfèrera l'utilisation de .get() ici
     #   qui nous permet d'éviter un if long (if "clef" in dictionnaire and dictonnaire["clef"])
 
+
+    # On crée une liste vide de résultat (qui restera vide par défaut
+    #   si on n'a pas de mot clé)
+
+    resultats = []
+
+    # On fait de même pour le titre de la page
+    titre = "Recherche"
+    resultats = Edition.recherche_avancee(request.args)
+
+
+
+    return render_template(
+        "pages/recherche.html",
+        resultats=resultats,
+        titre=titre
+
+    )
+@app.route("/recherche_avancee")
+def recherche_avancee():
+    return render_template("pages/rech_av_form.html", nom="Erasmus")
+
+@app.route("/recherche_rapide")
+def recherche_rapide():
+    """ Route permettant la recherche plein-texte à partir de la navbar
+    """
+    motcle = request.args.get("keyword", None)
     page = request.args.get("page", 1)
 
     if isinstance(page, str) and page.isdigit():
@@ -644,23 +678,36 @@ def recherche():
     else:
         page = 1
 
-    # On crée une liste vide de résultat (qui restera vide par défaut
-    #   si on n'a pas de mot clé)
+    # Création d'une liste vide de résultat (par défaut, vide si pas de mot-clé)
+    resultats = []
 
-
-    # On fait de même pour le titre de la page
+    # cherche les mots-clés dans les champs : nom, prenom, surnom, nom en langue maternelle, pays nationalité, langue
+    # occupation(s) et description
     titre = "Recherche"
-    resultats = Edition.recherche_avancee(request.args).paginate(page=page, per_page=EDITION_PAR_PAGE)
-
-
-
-    return render_template(
-        "pages/recherche.html",
-        resultats=resultats,
-        titre=titre,
-
-    )
-
+    if motcle :
+        resultats = Edition.query.filter(db.or_(Edition.edition_author_first.like("%{}%".format(motcle)),
+            Edition.edition_place.like("%{}%".format(motcle)),
+            Edition.edition_author_second.like("%{}%".format(motcle)),
+            Edition.edition_languages.like("%{}%".format(motcle)),
+            Edition.edition_prefaceur.like("%{}%".format(motcle)),
+            Edition.edition_printer.like("%{}%".format(motcle)),
+            Edition.edition_nomRejete.like("%{}%".format(motcle)),
+            Edition.edition_place2.like("%{}%".format(motcle)),
+            Edition.edition_class0.like("%{}%".format(motcle)),
+            Edition.edition_class1.like("%{}%".format(motcle)),
+            Edition.edition_class2.like("%{}%".format(motcle)),
+            Edition.edition_displayDate.like("%{}%".format(motcle)),
+            Edition.edition_cleanDate.like("%{}%".format(motcle)),
+            Edition.edition_country.like("%{}%".format(motcle)),
+            Edition.edition_full_title.like("%{}%".format(motcle)),
+            Edition.edition_publisher.like("%{}%".format(motcle)),
+            Edition.edition_translator.like("%{}%".format(motcle)),
+            Edition.edition_imprint.like("%{}%".format(motcle)),
+            Edition.edition_short_title.like("%{}%".format(motcle)))
+            ).paginate(page=page, per_page=EDITION_PAR_PAGE)
+    # si un résultat, renvoie sur la page résultat
+        titre = "Résultat de la recherche : `" + motcle + "`"
+        return render_template("pages/resultats.html", resultats=resultats, titre=titre, keyword=motcle)
 
 @app.route("/browse")
 def browse():

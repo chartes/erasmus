@@ -1,0 +1,55 @@
+{% extends "conteneur.html" %}
+
+{% block titre %}| Recherche {%endblock%}
+
+{% block corps %}
+
+<h1 style="font-family: Georgia;">Recherche avancée</h1>
+
+<form class="form" action="{{url_for("recherche")}}" method="GET">
+<div class="form-group row">
+    <label for="titre" class="col-sm-2 col-form-label">Titre</label>
+    <div class="col-sm-10">
+      <input type="search" class="form-control" id="titre" placeholder="titre" name="title">
+    </div>
+  </div>
+  <div class="form-group row">
+    <label for="auteur" class="col-sm-2 col-form-label">Auteur</label>
+    <div class="col-sm-10">
+      <input type="search" class="form-control" id="auteur" placeholder="auteur" name="auteur">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="possesseur" class="col-sm-2 col-form-label">Possesseur</label>
+    <div class="col-sm-10">
+      <input type="search" class="form-control" id="possesseur" placeholder="possesseur" name="possesseur">
+    </div>
+  </div>
+<div class="row">
+<div class="form-group row">
+    <label for="date" class="col-sm-4 col-form-label">Date</label>
+    <div class="col-sm-6">
+      <input type="search" class="form-control" id="date" placeholder="date" name="date">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="begin_date" class="col-sm-4 col-form-label">begin_date</label>
+    <div class="col-sm-6">
+      <input type="search" class="form-control" id="begin_date" placeholder="begin_date" name="begin_date">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="end_date" class="col-sm-4 col-form-label">end_date</label>
+    <div class="col-sm-6">
+      <input type="search" class="form-control" id="end_date" placeholder="end_date" name="end_date">
+    </div>
+  </div>
+</div>
+
+
+  <div>
+   <button class="btn btn-primary btn-lg" href="#" role="button">Rechercher</button>
+  </div>
+</form>
+{% endblock %}
+
