@@ -1,0 +1,28 @@
+{% extends "conteneur.html" %}
+
+{% block titre %}| {{titre}}{%endblock%}
+
+{% block corps %}
+
+
+
+<div style="font-family: Georgia;">
+
+    <h1>{{titre}}</h1>
+    {% if resultats %}
+        <p>Les éditions qui répondent à votre requête :</p>
+            <table>
+                {% for issue in resultats%}
+                <tr>
+                    <td width="890"><a href="{{url_for('main_bp.issue', edition_id=issue.edition_id)}}">{{issue.edition_short_title}}</a></td>
+                    <td width="100" valign="top">{{issue.edition_displayDate}}</td>
+                    <td width="100" valign="top">{{issue.edition_place}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+
+
+
+    {% endif %}
+</div>
+{% endblock %}

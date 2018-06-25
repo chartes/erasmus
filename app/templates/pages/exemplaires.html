@@ -1,0 +1,144 @@
+{% extends "conteneur.html" %}
+
+{% block titre %}
+    {%if exemplar %}| Exemplaire : {{exemplar.exemplaire_id}} {% endif %}
+{% endblock %}
+
+{% block corps %}
+    {% if exemplar %}
+
+<div style="font-family: Georgia;">
+        <table>
+            <tr>
+                <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">NOTICE SOMMAIRE</h4>
+            </tr>
+            <tr>
+                <td><b>Titre court:</b></td>
+                <td><a href="{{url_for('main_bp.issue', edition_id=edition.edition_id)}}">{{edition.edition_short_title}}</a> </td>
+
+            </tr>
+            <tr>
+                <td><b>Auteur principal: </b></td>
+                <td>{{edition.edition_author_first}}</td>
+            </tr>
+            {% if edition.edition_author_second %}
+            <tr>
+                <td><b>Auteur(s) secondaire(s): </b></td>
+                <td>{{edition.edition_author_second}}</td>
+            </tr>
+            {% endif %}
+
+                {% if edition.edition_country %}
+             <tr>
+                 <td><b>Pays de publication:</b></td>
+                 <td> {{edition.edition_country}}</td>
+             </tr>
+            {% endif %}
+            {% if edition.edition_place or edition.edition_printer or edition.edition_displayDate%}
+            <tr>
+                <td><b>Lieu/Imprimeur/Libraire/Date:</b></td>
+                <td> {%if edition.edition_place%}{{edition.edition_place}}{% endif %}
+                     {%if edition.edition_printer%}, {{edition.edition_printer}}{% endif %}
+                     {%if edition.edition_displayDate%}, {{edition.edition_displayDate}}{% endif %}</td>
+            </tr>
+            {% endif %}
+            {% if edition.edition_collator_format %}
+            <tr><td><b>Format:</b></td><td> {{edition.edition_collator_format}}</td></tr>
+            {% endif %}
+
+            </table>
+            <table>
+            <tr>
+                <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">SPÉCIFICITÉS D'EXEMPLAIRE</h4>
+            </tr>
+
+
+            <tr>
+                <td><b>Bibliothèque:</b></td>
+                <td> {{exemplar.bibliothecae.bibliothecae_library}}</td>
+            </tr>
+            {% if exemplar.exemplaire_pressmark %}
+            <tr>
+                <td><b>Cote: </b></td>
+                <td>{{exemplar.exemplaire_pressmark}}</td>
+            </tr>
+                {% endif %}
+            {% if exemplar.exemplaire_variantesEdition %}
+            <tr>
+                <td><b>Variantes d'édition: </b></td>
+                <td>{{exemplar.exemplaire_variantesEdition}}</td>
+            </tr>
+            {% endif %}
+
+                {% if  exemplar.exemplaire_collator_etatMateriel %}
+             <tr>
+                 <td><b>État matériel: </b></td>
+                 <td> {{ exemplar.exemplaire_collator_etatMateriel}}</td>
+             </tr>
+            {% endif %}
+            {% if exemplar.exemplaire_reliure%}
+            <tr>
+                <td><b>Reliure:</b></td>
+                <td> {{exemplar.exemplaire_reliure}}</td>
+            </tr>
+            {% endif %}
+            {% if exemplar.exemplaire_provenances %}
+            <tr>
+                <td><b>Provenances: </b></td>
+                <td>{{exemplar.exemplaire_provenances}}</td>
+            </tr>
+            {% endif %}
+                {% if exemplar.exemplaire_annotationManuscrite %}
+            <tr>
+                <td><b>Annotations manuscrites: </b></td>
+                <td> {{exemplar.exemplaire_annotationManuscrite}}</td>
+            </tr>
+              {% endif %}
+                {% if exemplar.exemplaire_digitalURL %}
+            <tr>
+                <td><b>Lien vers numérisation: </b></td>
+                <td> {{exemplar.exemplaire_digitalURL}}</td>
+            </tr>
+              {% endif %}
+                <tr>
+                <td><b>Recueil factice: </b></td>
+                <td> {{exemplar.exemplaire_reliure_recueilFactice}}</td>
+            </tr>
+                <tr><td> <a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_exemplaire', exemplaire_id = exemplar.exemplaire_id)}}" role="button">Modifier</a></td>
+                <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_exemplaire', exemplaire_id = exemplar.exemplaire_id) }}" role="button">Supprimer</a></td></tr>
+
+            </table>
+        <table>
+            <tr>
+                <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">PROVENANCE</h4>
+            </tr>
+            {% for provenance in provenances%}
+            <tr>
+                <td><b>Ancien possesseur: </b></td>
+                <td>{{provenance.provenance_possesseur}}</td>
+            </tr>
+            <tr>
+                <td><b>Type de provenance: </b></td>
+                {%if provenance.provenance_exLibris%}
+                <td>Ex-Libris: {{provenance.provenance_exLibris}} </td>
+                {%endif%}
+                {%if provenance.provenance_exDono%}
+                <td>Ex-Dono: {{provenance.provenance_exDono}} </td>
+                {%endif%}
+            </tr>
+            <tr>
+                <td><b>Notes sur provenance: </b></td>
+                <td>{{provenance.provenance_notes}}</td></tr>
+            <tr><td><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_provenance', provenance_id=provenance.provenance_id)}}" role="button">Modifier</a>
+            <a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_provenance', provenance_id=provenance.provenance_id) }}" role="button">Supprimer</a></td></tr>
+            {% endfor %}
+        </table>
+
+    <p><a class="btn btn-outline-info btn-sm" href="{{url_for('main_bp.ajout_provenance', exemplaire_id = exemplar.exemplaire_id)}}">Ajout provenance</a></p>
+    {% else %}
+        <p>La base de données est en cours de constitution</p>
+    {% endif %}
+
+
+    <p><a href="{{url_for('main_bp.accueil')}}">Retour à l'accueil</a></p></div>
+{% endblock %}
