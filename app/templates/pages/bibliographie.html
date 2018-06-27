@@ -31,8 +31,12 @@
                 <td><b>Lien vers une nimérisation: </b></td>
                 <td>{{bibliographie.bibliographie_URLLink}}</td>
             </tr>
-            <tr><td><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_bibliographie', bibliographie_id = bibliographie.bibliographie_id)}}" role="button">Modifier </a></td> </tr>
-            <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_bibliographie', bibliographie_id = bibliographie.bibliographie_id) }}" role="button">Supprimer</a></td></tr>
+            <tr>
+                {% if current_user.is_authenticated %}
+                <td><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_bibliographie', bibliographie_id = bibliographie.bibliographie_id)}}" role="button">Modifier </a></td>
+            <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_bibliographie', bibliographie_id = bibliographie.bibliographie_id) }}" role="button">Supprimer</a></td>
+                {%endif%}
+            </tr>
         </table>
         <table>
         <tr>

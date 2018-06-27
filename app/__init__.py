@@ -9,13 +9,11 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 #mail = Mail()
 db = SQLAlchemy()
-#csrf = CSRFProtect()
-#compress = Compress()
 
 # Set up Flask-Login
-#login_manager = LoginManager()
-#login_manager.session_protection = 'strong'
-#login_manager.login_view = 'account.login'
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'connexion'
 
 
 def create_app(config_name="dev"):
@@ -37,8 +35,8 @@ def create_app(config_name="dev"):
 
     # Set up extensions
     db.init_app(app)
-    #login_manager.init_app(app)
-    #compress.init_app(app)
+    login_manager.init_app(app)
+
     from app.routes import main_bp
     main_bp.template_folder = config[config_name].template_folder
     main_bp.static_folder = config[config_name].static_folder

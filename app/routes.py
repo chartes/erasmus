@@ -1,25 +1,25 @@
 from flask import render_template, request, flash, redirect, url_for
 from flask import Blueprint
 
-
-from .app import app, db
+from . import db, login_manager
 from .modeles.donnees import Edition, Exemplaire, Bibliothecae, Provenance, Reference, Bibliographie, Citation
 from .constantes import EDITION_PAR_PAGE
+from .modeles.utilisateurs import User
+from flask_login import login_user, current_user, logout_user, login_required
 
 main_bp = Blueprint(
     'main_bp',
     __name__,
 )
 
+
 @main_bp.route("/")
 def accueil():
-
     return render_template("pages/accueil.html", nom="Erasmus")
 
 
 @main_bp.route("/bibliotheques")
 def all_libraries():
-
     page = request.args.get("page", 1)
 
     if isinstance(page, str) and page.isdigit():
@@ -27,12 +27,13 @@ def all_libraries():
     else:
         page = 1
 
-    libraries = Bibliothecae.query.order_by(Bibliothecae.bibliothecae_library).paginate(page=page, per_page=EDITION_PAR_PAGE)
+    libraries = Bibliothecae.query.order_by(Bibliothecae.bibliothecae_library).paginate(page=page,
+                                                                                        per_page=EDITION_PAR_PAGE)
     return render_template("pages/all_libraries.html", nom="Erasmus", libraries=libraries, page=page)
+
 
 @main_bp.route("/editions")
 def all_issues():
-
     page = request.args.get("page", 1)
 
     if isinstance(page, str) and page.isdigit():
@@ -43,6 +44,7 @@ def all_issues():
     issues = Edition.query.order_by(Edition.edition_short_title).paginate(page=page, per_page=EDITION_PAR_PAGE)
     return render_template("pages/all_issues.html", nom="Erasmus", issues=issues, page=page)
 
+
 @main_bp.route("/exemplaires_par_possesseur")
 def exemplaires_par_possesseur():
     page = request.args.get("page", 1)
@@ -51,30 +53,26 @@ def exemplaires_par_possesseur():
         page = int(page)
     else:
         page = 1
-    provenances=Provenance.query.order_by(Provenance.provenance_possesseur).paginate(page=page, per_page=EDITION_PAR_PAGE)
+    provenances = Provenance.query.order_by(Provenance.provenance_possesseur).paginate(page=page,
+                                                                                       per_page=EDITION_PAR_PAGE)
 
     return render_template("pages/exemplaires_par_possesseur.html", nom="Erasmus", provenances=provenances, page=page)
 
 
-
 @main_bp.route("/edition/<int:edition_id>")
-
 def issue(edition_id):
-
     unique_issue = Edition.query.get(edition_id)
-    exemplaires=unique_issue.exemplaire
-    citations=unique_issue.citation
-    references=unique_issue.reference
+    exemplaires = unique_issue.exemplaire
+    citations = unique_issue.citation
+    references = unique_issue.reference
+    digitals = unique_issue.digital
 
-    return render_template("pages/issue.html", nom="Erasmus", issue=unique_issue, exemplaires=exemplaires, citations=citations, references=references)
-
-
-
+    return render_template("pages/issue.html", nom="Erasmus", issue=unique_issue, exemplaires=exemplaires,
+                           citations=citations, references=references, digitals=digitals)
 
 
 @main_bp.route("/bibliographies")
 def all_bibliographies():
-
     page = request.args.get("page", 1)
 
     if isinstance(page, str) and page.isdigit():
@@ -82,27 +80,25 @@ def all_bibliographies():
     else:
         page = 1
 
-    bibliographies = Bibliographie.query.order_by(Bibliographie.bibliographie_code).paginate(page=page, per_page=EDITION_PAR_PAGE)
+    bibliographies = Bibliographie.query.order_by(Bibliographie.bibliographie_code).paginate(page=page,
+                                                                                             per_page=EDITION_PAR_PAGE)
     return render_template("pages/all_bibliographies.html", nom="Erasmus", bibliographies=bibliographies, page=page)
 
+
 @main_bp.route("/bibliographie/<int:bibliographie_id>")
-
 def bibliographie(bibliographie_id):
-
     unique_bibliographie = Bibliographie.query.get(bibliographie_id)
-    references=unique_bibliographie.reference
+    references = unique_bibliographie.reference
 
-    print(unique_bibliographie.bibliographie_code)
+    return render_template("pages/bibliographie.html", nom="Erasmus", bibliographie=unique_bibliographie,
+                           references=references)
 
-    return render_template("pages/bibliographie.html", nom="Erasmus", bibliographie=unique_bibliographie, references=references)
 
 @main_bp.route("/ajout_bibliographie", methods=["GET", "POST"])
-
 def ajout_bibliographie():
     """ Route gérant les ajouts des commentaires
         :return: page html d'ajout de commentaire
         """
-
 
     if request.method == "POST":
         statut, donnees = Bibliographie.ajout_bibliographie(
@@ -115,7 +111,7 @@ def ajout_bibliographie():
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/ajout_bibliographie.html")
@@ -123,11 +119,8 @@ def ajout_bibliographie():
         return render_template("pages/ajout_bibliographie.html")
 
 
-
-
 @main_bp.route("/modif_bibliographie/<int:bibliographie_id>", methods=["GET", "POST"])
 def modif_bibliographie(bibliographie_id):
-
     unique_bibliographie = Bibliographie.query.get(bibliographie_id)
     if request.method == "POST":
         bibliographie = Bibliographie.query.get(bibliographie_id)
@@ -151,22 +144,18 @@ def modif_bibliographie(bibliographie_id):
         return render_template("pages/modif_bibliographie.html", bibliographie=unique_bibliographie)
 
 
-
-
-
 @main_bp.route("/bibliotheque/<int:bibliothecae_id>")
 def library(bibliothecae_id):
     # On a bien sûr aussi modifié le template pour refléter le changement
     unique_bibliotheque = Bibliothecae.query.get(bibliothecae_id)
 
     exemplaires = unique_bibliotheque.exemplaire
-    
 
-    return render_template("pages/bibliotheque.html", nom="Erasmus", bibliotheque=unique_bibliotheque, exemplaires=exemplaires)
+    return render_template("pages/bibliotheque.html", nom="Erasmus", bibliotheque=unique_bibliotheque,
+                           exemplaires=exemplaires)
 
 
 @main_bp.route("/ajout_bibliotheque", methods=["GET", "POST"])
-
 def ajout_bibliotheque():
     """ Route gérant les ajouts des commentaires
         :return: page html d'ajout de commentaire
@@ -183,22 +172,22 @@ def ajout_bibliotheque():
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/ajout_bibliotheque.html")
     else:
         return render_template("pages/ajout_bibliotheque.html")
 
-@main_bp.route("/modif_bibliotheque/<int:bibliothecae_id>", methods=["GET", "POST"])
 
+@main_bp.route("/modif_bibliotheque/<int:bibliothecae_id>", methods=["GET", "POST"])
 def modif_bibliotheque(bibliothecae_id):
     """ Route gérant les ajouts des commentaires
         :return: page html d'ajout de commentaire
         """
     unique_bibliotheque = Bibliothecae.query.get(bibliothecae_id)
     if request.method == "POST":
-        bibliotheque=Bibliothecae.query.get(bibliothecae_id)
+        bibliotheque = Bibliothecae.query.get(bibliothecae_id)
         statut, donnees = Bibliothecae.modif_bibliotheque(
             id=bibliothecae_id,
             library=request.form.get('library'),
@@ -217,19 +206,18 @@ def modif_bibliotheque(bibliothecae_id):
         return render_template("pages/modif_bibliotheque.html", bibliotheque=unique_bibliotheque)
 
 
-
 @main_bp.route("/exemplaire/<int:exemplaire_id>")
 def exemplar(exemplaire_id):
     # On a bien sûr aussi modifié le template pour refléter le changement
     unique_exemplar = Exemplaire.query.get(exemplaire_id)
     edition_exemplaire = Edition.query.get(unique_exemplar.exemplaire_edition_id)
-    provenances=unique_exemplar.provenance
+    provenances = unique_exemplar.provenance
 
-    return render_template("pages/exemplaires.html", nom="Erasmus", exemplar=unique_exemplar, edition=edition_exemplaire, provenances=provenances)
+    return render_template("pages/exemplaires.html", nom="Erasmus", exemplar=unique_exemplar,
+                           edition=edition_exemplaire, provenances=provenances)
 
 
 @main_bp.route("/creer_edition", methods=["GET", "POST"])
-
 def creer_edition():
     """ Route gérant les ajouts des commentaires
         :return: page html d'ajout de commentaire
@@ -286,12 +274,12 @@ def creer_edition():
             dedication=request.form.get("dedication", None),
             reference=request.form.get("reference", None),
             citation=request.form.get("citation", None),
-
+            user_id=current_user.get_id()
 
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/creer_edition.html", dates=dates)
@@ -306,7 +294,7 @@ def modif_edition(edition_id):
         :return: page html avec un formulaire pour modifier le commentaire"""
     unique_edition = Edition.query.get(edition_id)
 
-    if request.method=="POST":
+    if request.method == "POST":
         edition = Edition.query.get(edition_id)
         status, donnees = Edition.modif_edition(
             id=edition_id,
@@ -358,7 +346,8 @@ def modif_edition(edition_id):
             dedication=request.form.get("dedication", None),
             reference=request.form.get("reference", None),
             citation=request.form.get("citation", None),
-    )
+            user_id=current_user.get_id()
+        )
 
         if status is True:
             flash('Merci de votre contribution', 'success')
@@ -370,8 +359,8 @@ def modif_edition(edition_id):
             return render_template("pages/modif_commentaire.html")
     return render_template("pages/modif_edition.html", nom="Erasmus", edition=unique_edition)
 
-@main_bp.route("/ajout_exemplaire/<int:identifier>", methods=["GET", "POST"])
 
+@main_bp.route("/ajout_exemplaire/<int:identifier>", methods=["GET", "POST"])
 def ajout_exemplaire(identifier):
     """ Route gérant les ajouts des commentaires
     :return: page html d'ajout de commentaire
@@ -382,7 +371,6 @@ def ajout_exemplaire(identifier):
         edition = Edition.query.get(identifier)
 
         return render_template("pages/ajout_exemplaire.html", bibliotheques=bibliotheques, edition=edition)
-
 
     if request.method == "POST":
         edition = Edition.query.get(identifier)
@@ -401,9 +389,11 @@ def ajout_exemplaire(identifier):
             recueilFactice=request.form.get('recueilFactice'),
             reliure=request.form.get('reliure'),
             reliureXVI=request.form.get('reliureXVI'),
+            relieAvec=request.form.get('relieAvec'),
             edition_id=identifier,
             bibliothecae_id=request.form.get('library'),
-    )
+            user_id=current_user.get_id()
+        )
         if statut is True:
             flash("Enregistrement effectué", "success")
             return redirect(url_for('issue', edition_id=edition.edition_id))
@@ -414,9 +404,7 @@ def ajout_exemplaire(identifier):
         return render_template("pages/ajout_exemplaire.html")
 
 
-
 @main_bp.route("/modif_exemplaire/<int:exemplaire_id>", methods=["GET", "POST"])
-
 def modif_exemplaire(exemplaire_id):
     """ Route gérant les ajouts des commentaires
         :return: page html d'ajout de commentaire
@@ -442,7 +430,9 @@ def modif_exemplaire(exemplaire_id):
             recueilFactice=request.form.get('recueilFactice'),
             reliure=request.form.get('reliure'),
             reliureXVI=request.form.get('reliureXVI'),
+            relieAvec=request.form.get('relieAvec'),
             bibliothecae_id=request.form.get('library'),
+            user_id=current_user.get_id(),
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
@@ -452,7 +442,6 @@ def modif_exemplaire(exemplaire_id):
             return render_template("pages/modif_exemplaire.html", bibliotheques=bibliotheques)
     else:
         return render_template("pages/modif_exemplaire.html", exemplaire=unique_exemplaire, bibliotheques=bibliotheques)
-
 
 
 @main_bp.route("/ajout_provenance/<int:exemplaire_id>", methods=["GET", "POST"])
@@ -483,7 +472,7 @@ def ajout_provenance(exemplaire_id):
             reliure_provenance=request.form.get('reliure_provenance'),
             notes=request.form.get('notes'),
             exemplaire_id=exemplaire_id
-    )
+        )
         if statut is True:
             flash("Enregistrement effectué", "success")
             return redirect(url_for('exemplar', exemplaire_id=exemplaire.exemplaire_id))
@@ -493,10 +482,9 @@ def ajout_provenance(exemplaire_id):
     else:
         return render_template("pages/ajout_provenance.html")
 
+
 @main_bp.route("/modif_provenance/<int:provenance_id>", methods=["GET", "POST"])
-
 def modif_provenance(provenance_id):
-
     unique_provenance = Provenance.query.get(provenance_id)
 
     if request.method == "POST":
@@ -526,8 +514,8 @@ def modif_provenance(provenance_id):
     else:
         return render_template("pages/modif_provenance.html", provenance=unique_provenance)
 
-@main_bp.route("/ajout_reference/<int:edition_id>", methods=["GET", "POST"])
 
+@main_bp.route("/ajout_reference/<int:edition_id>", methods=["GET", "POST"])
 def ajout_reference(edition_id):
     """ Route gérant les ajouts des commentaires
     :return: page html d'ajout de commentaire
@@ -549,7 +537,7 @@ def ajout_reference(edition_id):
             note=request.form.get('note'),
             bibliographie_id=request.form.get('oeuvre'),
             edition_id=edition_id
-    )
+        )
         if statut is True:
             flash("Enregistrement effectué", "success")
             return redirect(url_for('issue', edition_id=edition.edition_id))
@@ -559,8 +547,8 @@ def ajout_reference(edition_id):
     else:
         return render_template("pages/ajout_reference.html")
 
-@main_bp.route("/modif_reference/<int:reference_id>", methods=["GET", "POST"])
 
+@main_bp.route("/modif_reference/<int:reference_id>", methods=["GET", "POST"])
 def modif_reference(reference_id):
     bibliographies = Bibliographie.query.all()
     unique_reference = Reference.query.get(reference_id)
@@ -586,8 +574,8 @@ def modif_reference(reference_id):
     else:
         return render_template("pages/modif_reference.html", reference=unique_reference, bibliographies=bibliographies)
 
-@main_bp.route("/ajout_citation/<int:edition_id>", methods=["GET", "POST"])
 
+@main_bp.route("/ajout_citation/<int:edition_id>", methods=["GET", "POST"])
 def ajout_citation(edition_id):
     """ Route gérant les ajouts des commentaires
     :return: page html d'ajout de commentaire
@@ -606,7 +594,7 @@ def ajout_citation(edition_id):
             dbnumber=request.form.get('dbnumber'),
             url=request.form.get('url'),
             edition_id=edition_id
-    )
+        )
         if statut is True:
             flash("Enregistrement effectué", "success")
             return redirect(url_for('issue', edition_id=edition.edition_id))
@@ -616,10 +604,9 @@ def ajout_citation(edition_id):
     else:
         return render_template("pages/ajout_citation.html")
 
+
 @main_bp.route("/modif_citation/<int:citation_id>", methods=["GET", "POST"])
-
 def modif_citation(citation_id):
-
     unique_citation = Citation.query.get(citation_id)
 
     if request.method == "POST":
@@ -630,7 +617,6 @@ def modif_citation(citation_id):
             dbname=request.form.get('dbname'),
             dbnumber=request.form.get('dbnumber'),
             url=request.form.get('url'),
-
 
         )
         if statut is True:
@@ -643,14 +629,12 @@ def modif_citation(citation_id):
         return render_template("pages/modif_citation.html", citation=unique_citation)
 
 
-
 @main_bp.route("/recherche")
 def recherche():
     """ Route permettant la recherche plein-texte
     """
     # On préfèrera l'utilisation de .get() ici
     #   qui nous permet d'éviter un if long (if "clef" in dictionnaire and dictonnaire["clef"])
-
 
     # On crée une liste vide de résultat (qui restera vide par défaut
     #   si on n'a pas de mot clé)
@@ -659,9 +643,7 @@ def recherche():
 
     # On fait de même pour le titre de la page
     titre = "Recherche"
-    resultats = Edition.recherche_avancee(request.args)
-
-
+    resultats = Edition.recherche_avancee(request.args).order_by(Edition.edition_short_title)
 
     return render_template(
         "pages/recherche.html",
@@ -669,9 +651,12 @@ def recherche():
         titre=titre
 
     )
+
+
 @main_bp.route("/recherche_avancee")
 def recherche_avancee():
     return render_template("pages/rech_av_form.html", nom="Erasmus")
+
 
 @main_bp.route("/recherche_rapide")
 def recherche_rapide():
@@ -691,47 +676,32 @@ def recherche_rapide():
     # cherche les mots-clés dans les champs : nom, prenom, surnom, nom en langue maternelle, pays nationalité, langue
     # occupation(s) et description
     titre = "Recherche"
-    if motcle :
+    if motcle:
         resultats = Edition.query.filter(db.or_(Edition.edition_author_first.like("%{}%".format(motcle)),
-            Edition.edition_place.like("%{}%".format(motcle)),
-            Edition.edition_author_second.like("%{}%".format(motcle)),
-            Edition.edition_languages.like("%{}%".format(motcle)),
-            Edition.edition_prefaceur.like("%{}%".format(motcle)),
-            Edition.edition_printer.like("%{}%".format(motcle)),
-            Edition.edition_nomRejete.like("%{}%".format(motcle)),
-            Edition.edition_place2.like("%{}%".format(motcle)),
-            Edition.edition_class0.like("%{}%".format(motcle)),
-            Edition.edition_class1.like("%{}%".format(motcle)),
-            Edition.edition_class2.like("%{}%".format(motcle)),
-            Edition.edition_displayDate.like("%{}%".format(motcle)),
-            Edition.edition_cleanDate.like("%{}%".format(motcle)),
-            Edition.edition_country.like("%{}%".format(motcle)),
-            Edition.edition_full_title.like("%{}%".format(motcle)),
-            Edition.edition_publisher.like("%{}%".format(motcle)),
-            Edition.edition_translator.like("%{}%".format(motcle)),
-            Edition.edition_imprint.like("%{}%".format(motcle)),
-            Edition.edition_short_title.like("%{}%".format(motcle)))
-            ).paginate(page=page, per_page=EDITION_PAR_PAGE)
-    # si un résultat, renvoie sur la page résultat
+                                                Edition.edition_place.like("%{}%".format(motcle)),
+                                                Edition.edition_author_second.like("%{}%".format(motcle)),
+                                                Edition.edition_languages.like("%{}%".format(motcle)),
+                                                Edition.edition_prefaceur.like("%{}%".format(motcle)),
+                                                Edition.edition_printer.like("%{}%".format(motcle)),
+                                                Edition.edition_nomRejete.like("%{}%".format(motcle)),
+                                                Edition.edition_place2.like("%{}%".format(motcle)),
+                                                Edition.edition_class0.like("%{}%".format(motcle)),
+                                                Edition.edition_class1.like("%{}%".format(motcle)),
+                                                Edition.edition_class2.like("%{}%".format(motcle)),
+                                                Edition.edition_displayDate.like("%{}%".format(motcle)),
+                                                Edition.edition_cleanDate.like("%{}%".format(motcle)),
+                                                Edition.edition_country.like("%{}%".format(motcle)),
+                                                Edition.edition_full_title.like("%{}%".format(motcle)),
+                                                Edition.edition_publisher.like("%{}%".format(motcle)),
+                                                Edition.edition_translator.like("%{}%".format(motcle)),
+                                                Edition.edition_imprint.like("%{}%".format(motcle)),
+                                                Edition.edition_short_title.like("%{}%".format(motcle)))
+                                         ).order_by(Edition.edition_short_title).paginate(page=page,
+                                                                                          per_page=EDITION_PAR_PAGE)
+        # si un résultat, renvoie sur la page résultat
         titre = "Résultat de la recherche : `" + motcle + "`"
         return render_template("pages/resultats.html", resultats=resultats, titre=titre, keyword=motcle)
 
-@main_bp.route("/browse")
-def browse():
-
-    page = request.args.get("page", 1)
-
-    if isinstance(page, str) and page.isdigit():
-        page = int(page)
-    else:
-        page = 1
-
-    resultats = Edition.query.paginate(page=page, per_page=EDITION_PAR_PAGE)
-
-    return render_template(
-        "pages/browse.html",
-        resultats=resultats
-    )
 
 @main_bp.route("/suppression_edition/<int:edition_id>", methods=["GET", "POST"])
 def suppression_edition(edition_id):
@@ -746,27 +716,28 @@ def suppression_edition(edition_id):
         return render_template("pages/suppr_edition.html", unique=unique_edition)
     else:
         status = Edition.delete_edition(edition_id=edition_id)
-        if status is True :
+        if status is True:
             flash("Une édition a été supprimée !", "success")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
         else:
             flash("La suppression a échoué.", "danger")
             return redirect(url_for('issue', edition_id=unique_edition.edition_id))
 
+
 @main_bp.route("/suppression_bibliographie/<int:bibliographie_id>", methods=["GET", "POST"])
 def suppression_bibliographie(bibliographie_id):
-
-    unique_bibliographie=Bibliographie.query.get(bibliographie_id)
+    unique_bibliographie = Bibliographie.query.get(bibliographie_id)
     if request.method == "GET":
         return render_template("pages/suppression_bibliographie.html", bibliographie=unique_bibliographie)
     else:
         status = Bibliographie.delete_bibliographie(bibliographie_id=bibliographie_id)
         if status is True:
             flash("Une oeuvre a été supprimée !", "success")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
+
 
 @main_bp.route("/suppression_citation/<int:citation_id>", methods=["GET", "POST"])
 def suppression_citation(citation_id):
@@ -781,32 +752,32 @@ def suppression_citation(citation_id):
         return render_template("pages/suppression_citation.html", citation=unique_citation)
     else:
         status = Citation.delete_citation(citation_id=citation_id)
-        if status is True :
+        if status is True:
             flash("La citation a été supprimée !", "success")
             return redirect(url_for('issue', edition_id=unique_citation.citation_edition_id))
         else:
             flash("La suppression a échoué.", "danger")
             return redirect(url_for('issue', edition_id=unique_citation.citation_edition_id))
 
+
 @main_bp.route("/suppression_bibliotheque/<int:bibliothecae_id>", methods=["GET", "POST"])
 def suppression_bibliotheque(bibliothecae_id):
-
-    unique_bibliotheque=Bibliothecae.query.get(bibliothecae_id)
+    unique_bibliotheque = Bibliothecae.query.get(bibliothecae_id)
     if request.method == "GET":
         return render_template("pages/suppression_bibliotheque.html", bibliotheque=unique_bibliotheque)
     else:
         status = Bibliothecae.delete_bibliotheque(bibliothecae_id=bibliothecae_id)
         if status is True:
             flash("Une oeuvre a été supprimée !", "success")
-            return redirect("/")
+            return redirect(url_for("main_bp.accueil"))
         else:
             flash("La suppression a échoué.", "danger")
             return redirect(url_for('library', bibliothecae_id=unique_bibliotheque.bibliothecae_id))
 
+
 @main_bp.route("/suppression_exemplaire/<int:exemplaire_id>", methods=["GET", "POST"])
 def suppression_exemplaire(exemplaire_id):
-
-    unique_exemplaire=Exemplaire.query.get(exemplaire_id)
+    unique_exemplaire = Exemplaire.query.get(exemplaire_id)
     if request.method == "GET":
         return render_template("pages/suppression_exemplaire.html", exemplaire=unique_exemplaire)
     else:
@@ -818,10 +789,10 @@ def suppression_exemplaire(exemplaire_id):
             flash("La suppression a échoué.", "danger")
             return redirect(url_for('exemplar', exemplaire_id=unique_exemplaire.exemplaire_id))
 
+
 @main_bp.route("/suppression_provenance/<int:provenance_id>", methods=["GET", "POST"])
 def suppression_provenance(provenance_id):
-
-    unique_provenance=Provenance.query.get(provenance_id)
+    unique_provenance = Provenance.query.get(provenance_id)
     if request.method == "GET":
         return render_template("pages/suppression_provenance.html", provenance=unique_provenance)
     else:
@@ -833,10 +804,10 @@ def suppression_provenance(provenance_id):
             flash("La suppression a échoué.", "danger")
             return redirect(url_for('exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
 
+
 @main_bp.route("/suppression_reference/<int:reference_id>", methods=["GET", "POST"])
 def suppression_reference(reference_id):
-
-    unique_reference=Reference.query.get(reference_id)
+    unique_reference = Reference.query.get(reference_id)
     if request.method == "GET":
         return render_template("pages/suppression_reference.html", reference=unique_reference)
     else:
@@ -847,3 +818,63 @@ def suppression_reference(reference_id):
         else:
             flash("La suppression a échoué.", "danger")
             return redirect(url_for('issue', edition_id=unique_reference.reference_edition_id))
+
+
+@main_bp.route("/register", methods=["GET", "POST"])
+def inscription():
+    """ Route gérant les inscriptions
+    :return: page html d'inscription
+    """
+
+    if request.method == "POST":
+        statut, donnees = User.creer(
+            login=request.form.get("login", None),
+            email=request.form.get("email", None),
+            nom=request.form.get("nom", None),
+            motdepasse=request.form.get("motdepasse", None)
+        )
+        if statut is True:
+            flash("Enregistrement effectué. Identifiez-vous maintenant", "success")
+            return redirect(url_for('main_bp.accueil'))
+        else:
+            flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
+            return render_template("pages/inscription.html")
+    else:
+        return render_template("pages/inscription.html")
+
+
+@main_bp.route("/connexion", methods=["POST", "GET"])
+def connexion():
+    """ Route gérant les connexions
+    :return: page html de connection
+    """
+    if current_user.is_authenticated is True:
+        flash("Vous êtes déjà connecté-e", "info")
+        return redirect(url_for("main_bp.accueil"))
+    # Si on est en POST, cela veut dire que le formulaire a été envoyé
+    if request.method == "POST":
+        utilisateur = User.identification(
+            login=request.form.get("login", None),
+            motdepasse=request.form.get("motdepasse", None)
+        )
+        if utilisateur:
+            flash("Connexion effectuée", "success")
+            login_user(utilisateur)
+            return redirect(url_for("main_bp.accueil"))
+        else:
+            flash("Les identifiants n'ont pas été reconnus", "error")
+
+    return render_template("pages/connexion.html")
+
+
+@main_bp.route("/deconnexion", methods=["POST", "GET"])
+def deconnexion():
+    """ Route gérant les déconnexions
+        :return: page html d'acceuil
+        """
+    if current_user.is_authenticated is True:
+        logout_user()
+    flash("Vous êtes déconnecté-e", "info")
+
+
+    return redirect(url_for("main_bp.accueil"))

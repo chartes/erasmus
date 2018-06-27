@@ -41,12 +41,16 @@
                 <td>{{issue.edition_author_second}}</td>
             </tr>
             {% endif %}
-            <!--{% if issue.edition_publisher %}
-            <dt>Éditeur</dt><dd>{{issue.edition_publisher}}</dd>
+            {% if issue.edition_publisher %}
+            <tr><td width="130"><b>Éditeur scientifique: </b></td><td>{{issue.edition_publisher}}</td></tr>
             {% endif %}
             {% if issue.edition_translator %}
-            <dt>Traducteur</dt><dd>{{issue.edition_translator}}</dd>
-            {% endif %}-->
+            <tr><td width="130"><b>Traducteur: </b></td><td>{{issue.edition_translator}}</td></tr>
+            {% endif %}
+            {% if issue.edition_prefaceur %}
+            <tr><td width="130"><b>Auteur de texte liminaire</b></td>
+                <td>{{issue.edition_prefaceur}}</td></tr>
+            {%endif%}
                 {% if issue.edition_country %}
              <tr>
                  <td width="130"><b>Pays de publication:</b></td>
@@ -117,7 +121,9 @@
                     <td width="130"><b>Privilège:  </b></td>
                     <td>{{issue.edition_privelege}}</td>
                 </tr>
-            {% endif %}
+                {% endif %}
+
+
             {% if issue.edition_class0 or issue.edition_class1 or issue.edition_class2 %}
             <tr>
                 <td width="130"><b>Matière:  </b></td>
@@ -139,16 +145,25 @@
                 <td>{{issue.edition_notes}}</td>
             </tr>
             {% endif %}
-               
+                <tr>
+                    {%for digital in digitals%}
+                     {%if digital.digital_url%}
+                    <td width="130"><b>Lien vers une numérisation:  </b></td>
+                    <td><a href="{{digital.digital_url}}">{{digital.digital_url}}</a></td>
+                    {%endif%}
+                    {%endfor%}
+                </tr>
+               {% if current_user.is_authenticated %}
                 <tr><td></td><td style="text-align:right;"><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_edition', edition_id = issue.edition_id)}}" role="button">Modifier </a>
                 <a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_edition', edition_id=issue.edition_id) }}" role="button">Supprimer</a></td></tr>
+                {%endif%}
 
         </table>
 
         <table>
 
             <tr>
-                <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">EXEMPLAIRES</h4>
+                <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">EXEMPLAIRES {%if exemplaires%}({{exemplaires|length}}){%endif%}</h4>
             </tr>
             {%if exemplaires%}
             <tr>
@@ -165,17 +180,19 @@
                 <td valign="top">{{exemplair.bibliothecae.bibliothecae_ville}}</td>
                 <td valign="top">{{exemplair.bibliothecae.bibliothecae_library}}</td>
                 <td valign="top">{{exemplair.exemplaire_pressmark}}</td>
-                <td valign="top">{{exemplair.exemplaire_digitalURL}}</td>
-                <td valign="top"><a href="{{url_for('main_bp.exemplar', exemplaire_id=exemplair.exemplaire_id)}}"><img src="{{url_for("main_bp.static", filename="images/livre.jpeg")}}" width="35"
+                <td valign="top">{%if exemplair.exemplaire_digitalURL%}<a href="{{exemplair.exemplaire_digitalURL}}">Lien</a>{%endif%}</td>
+
+                <td valign="top"><a href="{{url_for('main_bp.exemplar', exemplaire_id=exemplair.exemplaire_id)}}"><img src="{{url_for("static", filename="images/livre.jpeg")}}" width="35"
         height="35" border="0" alt="lien"> </a></td>
             </tr>
             {% endfor %}
              {%else%}
-            <p>Il n'y a pas d'exemplaires connus</p>
+            <p>Pas d'exemplaire connu</p>
             {%endif%}
         </table>
+        {% if current_user.is_authenticated %}
  <p><a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('main_bp.ajout_exemplaire', identifier = issue.edition_id)}}">Ajout exemplaire</a></p>
-
+        {%endif%}
 
                 <h4 style=" margin-top: 1.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">CITATION</h4>
         {%if citations%}
@@ -183,7 +200,7 @@
         {% for citation in citations %}
 
 
-  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#multiCollapseExample{{citation.citation_id}}" aria-expanded="false" aria-controls="multiCollapseExample{{citation.citation_id}}">{{citation.citation_dbname}}</button>
+  <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#multiCollapseExample{{citation.citation_id}}" aria-expanded="false" aria-controls="multiCollapseExample{{citation.citation_id}}">{{citation.catalogue.catalogue_nom_abrege}} </button> {%if citation.citation_url%}<a href="{{citation.citation_url}}">{{citation.citation_dbnumber}} </a>{%else%}{{citation.citation_dbnumber}}{%endif%}
 
 
 <div class="row">
@@ -191,13 +208,17 @@
     <div class="collapse multi-collapse" id="multiCollapseExample{{citation.citation_id}}">
       <div class="card card-body">
 <table>
-    <tr><td width="50">{{citation.citation_dbname}}</td>
-        <td width="100">{{citation.citation_dbnumber}}</td>
-        <td width="600"> <a href="{{citation.citation_url}}">{{citation.citation_url}}</a></td>
-        <td width="20"><a title="modifier" href="{{url_for('main_bp.modif_citation', citation_id=citation.citation_id)}}"><img src="{{url_for("main_bp.static", filename="images/edit.png")}}" width="15"
+    <tr><td width="70">{{citation.catalogue.catalogue_nom}}</td>
+        <td width="100">
+        <a href="{{citation.catalogue.catalogue_site}}">{{citation.catalogue.catalogue_site}} </a></td>
+        {% if current_user.is_authenticated %}
+        <td width="20"><a title="modifier" href="{{url_for('main_bp.modif_citation', citation_id=citation.citation_id)}}"><img src="{{url_for("static", filename="images/edit.png")}}" width="15"
         height="15" border="0" alt="modifier"> </a> </td>
-        <td width="20"><a title="supprimer" href="{{url_for('main_bp.suppression_citation', citation_id=citation.citation_id)}}"><img src="{{url_for("main_bp.static", filename="images/trash.png")}}" width="15"
-            height="15" border="0" alt="supprimer"> </a></td></tr></table>
+        <td width="20"><a title="supprimer" href="{{url_for('main_bp.suppression_citation', citation_id=citation.citation_id)}}"><img src="{{url_for("static", filename="images/trash.png")}}" width="15"
+            height="15" border="0" alt="supprimer"> </a></td>
+        {%endif%}
+    </tr>
+</table>
          <!-- <a style="width: 20%; height: 2em;" class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_citation', citation_id=citation.citation_id)}}" role="button">Modifier</a></button>
            <a style="width: 20%; height: 2em;" class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_citation', citation_id=citation.citation_id) }}" role="button">Supprimer</a> -->
 
@@ -216,8 +237,9 @@
         {%else%}
         <p>Il n'y a pas de citations</p>
         {%endif%}
-
+{% if current_user.is_authenticated %}
                 <p style="padding-top: 45px;"><a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('main_bp.ajout_citation', edition_id = issue.edition_id)}}">Ajout citation</a></p>
+        {%endif%}
         </div>
     {% if issue.edition_urlImage %}
 
@@ -227,14 +249,14 @@
 </div>
     {%elif issue.edition_urlImage == "None"%}
     <div class="col-4 col-sm-4">
-    <img src="{{url_for("main_bp.static", filename="images/erasmus.jpeg")}}" width="450"
+    <img src="{{url_for("static", filename="images/erasmus.jpeg")}}" width="450"
         height="650" border="0" alt="Erasmus Desiderius">
 </div>
     {%else%}
 
 <div class="col-4 col-sm-4">
-    <img src="{{url_for("main_bp.static", filename="images/erasmus.jpeg")}}" width="450"
-        height="650" border="0" alt="Erasmus Desiderius">
+    <img src="{{url_for("static", filename="images/erasmus.jpeg")}}" width=130%
+        height=45% border="0" alt="Erasmus Desiderius">
 </div>
     {% endif %}
 </div>
@@ -251,7 +273,7 @@
            <td width="100"><b>VOLUME</b></td>
        </tr> </table>
     {% for reference in references %}
- <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#multiCollapseExample{{reference.reference_id}}" aria-expanded="false" aria-controls="multiCollapseExample{{reference.reference_id}}">{{reference.bibliographie.bibliographie_code}}</button>
+ <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#multiCollapseExample{{reference.reference_id}}" aria-expanded="false" aria-controls="multiCollapseExample{{reference.reference_id}}">{{reference.bibliographie.bibliographie_code}} </button>{{reference.reference_page}}
    <div class="row">
   <div class="col">
     <div class="collapse multi-collapse" id="multiCollapseExample{{reference.reference_id}}">
@@ -264,10 +286,14 @@
         <td width="150" valign="top">{{reference.bibliographie.bibliographie_URLLink}}</td>
         <td width="100" valign="top">{{reference.reference_page}}</td>
         <td width="100" valign="top">{{reference.reference_volume}}</td>
-
-        <td><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_reference', reference_id=reference.reference_id)}}" role="button">Modifier</a></td>
-        <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_reference', reference_id=reference.reference_id) }}" role="button">Supprimer</a></td></tr></table>
-
+              {% if current_user.is_authenticated %}
+        <td width="20"><a title="modifier" href="{{url_for('main_bp.modif_reference', reference_id=reference.reference_id)}}"><img src="{{url_for("static", filename="images/edit.png")}}" width="15"
+        height="15" border="0" alt="modifier"> </a> </td>
+        <td width="20"><a title="supprimer" href="{{url_for('main_bp.suppression_reference', reference_id=reference.reference_id)}}"><img src="{{url_for("static", filename="images/trash.png")}}" width="15"
+            height="15" border="0" alt="supprimer"> </a></td>
+              {%endif%}
+          </tr>
+    </table>
 
       </div>
     </div>
@@ -277,10 +303,11 @@
 
     {% endfor %}
          {%else%}
-        <p>Il n'y a pas de références bibliographiques</p>
+        <p>Références bibliographiques non précisées</p>
          {%endif%}
+        {% if current_user.is_authenticated %}
 <a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('main_bp.ajout_reference', edition_id = issue.edition_id)}}">Ajout reference</a>
-
+{%endif%}
 
 
         {% else %}

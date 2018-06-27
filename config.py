@@ -29,7 +29,7 @@ class DevelopmentConfig(Config):
     DB_USER='erasmus'
     DB_PWD='erasmus'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-        'mysql://{}:{}@{}/{}?charset=utf8'.format(DB_USER, DB_PWD, DB_HOST, DB_SCHEMA)
+        'mysql://{}:{}@{}/{}'.format(DB_USER, DB_PWD, DB_HOST, DB_SCHEMA)
 
     print('THIS APP IS IN DEBUG MODE. YOU SHOULD NOT SEE THIS IN PRODUCTION.')
 

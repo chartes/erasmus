@@ -32,8 +32,12 @@
                 <td>{{bibliotheque.bibliothecae_web}}</td>
             </tr>
             {% endif %}
-        <tr><td> <a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_bibliotheque', bibliothecae_id = bibliotheque.bibliothecae_id)}}" role="button">Modifier </a></td>
-        <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_bibliotheque', bibliothecae_id = bibliotheque.bibliothecae_id) }}" role="button">Supprimer</a></td></tr>
+        <tr>
+            {% if current_user.is_authenticated %}
+            <td> <a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_bibliotheque', bibliothecae_id = bibliotheque.bibliothecae_id)}}" role="button">Modifier </a></td>
+        <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_bibliotheque', bibliothecae_id = bibliotheque.bibliothecae_id) }}" role="button">Supprimer</a></td>
+        {% endif %}
+        </tr>
 
 
     </table>

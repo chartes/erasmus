@@ -13,7 +13,7 @@
                     <td style="font-family: Georgia;" width="100", valign="top">{{issue.edition_displayDate}}</td>
                     <td style="font-family: Georgia;" width="100", valign="top">{{issue.edition_place}}</td>
                     {% if issue.edition_digital == "oui" %}
-                    <td><img src="{{url_for("main_bp.static", filename="images/foto.png")}}" width="23"
+                    <td><img src="{{url_for("static", filename="images/foto.png")}}" width="23"
         height="20" border="0" alt="lien"></td>
                     {%else%}
                     <td></td>

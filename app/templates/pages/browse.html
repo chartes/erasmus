@@ -9,7 +9,7 @@
         <p>Il y a {{resultats.total}} édition qui répondent à votre requête :</p>
         <ul>
             {% for issue in resultats.items %}
-                <li><a href="{{url_for('main_bp.issue', edition_id=issue.edition_id)}}">{{issue.edition_short_title}}</a></li>
+                <li><a href="{{url_for('main_bp.main_bp.issue', edition_id=issue.edition_id)}}">{{issue.edition_short_title}}</a></li>
             {% endfor %}
         </ul>
     <nav aria-label="research-pagination">
@@ -18,7 +18,7 @@
             {% if page %}
               {% if page != resultats.page %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for("main_bp.browse", page=page) }}">{{page}}</a>
+                    <a class="page-link" href="{{ url_for("main_bp.main_bp.browse", page=page) }}">{{page}}</a>
                 </li>
               {% else %}
                 <li class="page-item active disabled">

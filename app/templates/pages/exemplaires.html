@@ -104,14 +104,19 @@
                 <td><b>Recueil factice: </b></td>
                 <td> {{exemplar.exemplaire_reliure_recueilFactice}}</td>
             </tr>
-                <tr><td> <a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_exemplaire', exemplaire_id = exemplar.exemplaire_id)}}" role="button">Modifier</a></td>
-                <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_exemplaire', exemplaire_id = exemplar.exemplaire_id) }}" role="button">Supprimer</a></td></tr>
+                {% if current_user.is_authenticated %}
+                <tr>
+                    <td></td><td> <a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_exemplaire', exemplaire_id = exemplar.exemplaire_id)}}" role="button">Modifier</a>
+                <a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_exemplaire', exemplaire_id = exemplar.exemplaire_id) }}" role="button">Supprimer</a></td>
+                {%endif%}
+                </tr>
 
             </table>
         <table>
             <tr>
                 <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">PROVENANCE</h4>
             </tr>
+
             {% for provenance in provenances%}
             <tr>
                 <td><b>Ancien possesseur: </b></td>
@@ -128,13 +133,26 @@
             </tr>
             <tr>
                 <td><b>Notes sur provenance: </b></td>
-                <td>{{provenance.provenance_notes}}</td></tr>
-            <tr><td><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_provenance', provenance_id=provenance.provenance_id)}}" role="button">Modifier</a>
-            <a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_provenance', provenance_id=provenance.provenance_id) }}" role="button">Supprimer</a></td></tr>
-            {% endfor %}
-        </table>
+                <td>{{provenance.provenance_notes}}</td>
+            </tr>
 
+            <tr>
+                {% if current_user.is_authenticated %}
+                <td><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_provenance', provenance_id=provenance.provenance_id)}}" role="button">Modifier</a>
+            <a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_provenance', provenance_id=provenance.provenance_id) }}" role="button">Supprimer</a></td>
+            {%endif%}
+            </tr>
+            {% endfor %}
+            {%if exemplar.exemplaire_provenances%}
+            <tr>
+                <td><b>Notes de USTC: </b></td>
+                <td>{{exemplar.exemplaire_provenances}}</td>
+            </tr>
+            {%endif%}
+        </table>
+{% if current_user.is_authenticated %}
     <p><a class="btn btn-outline-info btn-sm" href="{{url_for('main_bp.ajout_provenance', exemplaire_id = exemplar.exemplaire_id)}}">Ajout provenance</a></p>
+    {%endif%}
     {% else %}
         <p>La base de données est en cours de constitution</p>
     {% endif %}
