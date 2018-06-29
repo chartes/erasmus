@@ -14,7 +14,7 @@
             </tr>
             <tr>
                 <td><b>Titre court:</b></td>
-                <td><a href="{{url_for('main_bp.issue', edition_id=edition.edition_id)}}">{{edition.edition_short_title}}</a> </td>
+                <td>{{edition.edition_short_title}} </td>
 
             </tr>
             <tr>
@@ -45,7 +45,7 @@
             {% if edition.edition_collator_format %}
             <tr><td><b>Format:</b></td><td> {{edition.edition_collator_format}}</td></tr>
             {% endif %}
-
+            <tr><td><a class="btn btn-outline-link btn-sm" href="{{url_for('main_bp.issue', edition_id=edition.edition_id)}}" role="button">Revenir vers édition</td></tr>
             </table>
             <table>
             <tr>
@@ -97,7 +97,7 @@
                 {% if exemplar.exemplaire_digitalURL %}
             <tr>
                 <td><b>Lien vers numérisation: </b></td>
-                <td> {{exemplar.exemplaire_digitalURL}}</td>
+                <td> <a href="{{exemplar.exemplaire_digitalURL}}">Lien</a></td>
             </tr>
               {% endif %}
                 <tr>

@@ -4,13 +4,11 @@
 
 {% block corps %}
 
-<h1 style="font-family: Georgia;">Édition d'Erasmus</h1>
+<h1 style="font-family: Georgia;">Exemplaire d'Erasmus</h1>
 <p style="font-family: Georgia;">Complétez le formulaire et cliquez sur "Enregistrer".</p>
     <form class="container"  method="GET" class="col-8 col-sm-8"  action="{{url_for("main_bp.ajout_exemplaire", identifier=edition.edition_id)}}" style="font-family: Georgia;">
 
     <div class="form-group row">
-
-
         <div class="col-6 col-sm-6">
       <div class="col-sm-6">
         <input type="hidden" class="form-control" id="idEdition" name="idEdition" value="{{edition.edition_id}}">

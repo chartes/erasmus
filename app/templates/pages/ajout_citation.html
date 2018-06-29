@@ -6,14 +6,13 @@
 
 <h1 style="font-family: Georgia;">Édition d'Erasmus</h1>
 <p style="font-family: Georgia;">Complétez le formulaire et cliquez sur "Enregistrer".</p>
-    <form class="container" method="GET" class="col-8 col-sm-8"  action="{{url_for("main_bp.ajout_citation", edition_id=edition.edition_id)}}" style="font-family: Georgia;">
+<form class="container" method="GET" class="col-8 col-sm-8"  action="{{url_for("main_bp.ajout_citation", edition_id=edition.edition_id)}}" style="font-family: Georgia;">
     <div class="form-group col">
-<div class="col-6 col-sm-6">
-      <div class="col-sm-6">
-
-        <input type="hidden" class="form-control" id="idEdition" name="idEdition" value="{{edition.edition_id}}">
-      </div>
-    </div>
+        <div class="col-6 col-sm-6">
+            <div class="col-sm-6">
+                <input type="hidden" class="form-control" id="idEdition" name="idEdition" value="{{edition.edition_id}}">
+            </div>
+        </div>
     </div>
 </form>
 <form class="form" method="POST" class="col-8 col-sm-8" action="{{url_for("main_bp.ajout_citation", edition_id=edition.edition_id)}}" style="font-family: Georgia;">
@@ -23,20 +22,9 @@
       <div class="input-group" >
      <select class="selectpicker form-control" id="dbname" name="dbname">
          <option></option>
-         <option>Erasmus Online</option>
-         <option>ESTC</option>
-         <option>GLN15-16</option>
-         <option>USTC</option>
-         <option>VD 16</option>
-         <option>EDIT 16</option>
-         <option>Lyon 15-16</option>
-         <option>ISTC</option>
-         <option>BP 16</option>
-         <option>FB</option>
-         <option>NB</option>
-         <option>IB</option>
-         <option>GW</option>
-         <option>STCN</option>
+       {% for catalogue in catalogues %}
+        <option value="{{ catalogue.catalogue_id}}">{{catalogue.catalogue_nom_abrege}} </option>
+        {% endfor %}
      </select>
     </div>
   </div>

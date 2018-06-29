@@ -1,0 +1,37 @@
+{% extends "conteneur.html" %}
+
+{% block titre %}| Catalogue {%endblock%}
+
+{% block corps %}
+
+<h1 style="font-family: Georgia;">Catalogue</h1>
+<p style="font-family: Georgia;">Complétez le formulaire et cliquez sur "Enregistrer".</p>
+<form class="form" method="POST" action="{{url_for("main_bp.ajout_catalogue")}}" style="font-family: Georgia;">
+
+  <div class="form-group row">
+    <label for="nom" class="col-sm-2 col-form-label">Nom de catalogue</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="nom" placeholder="nom" name="nom">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="nom_abrege" class="col-sm-2 col-form-label">Nom abrégé</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="nom_abrege" placeholder="nom_abrege" name="nom_abrege">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="site" class="col-sm-2 col-form-label">Site</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="site" placeholder="sitee" name="site">
+    </div>
+  </div>
+
+
+
+
+  <div>
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+  </div>
+</form>
+{% endblock %}
