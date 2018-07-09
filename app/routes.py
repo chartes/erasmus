@@ -136,7 +136,7 @@ def modif_bibliographie(bibliographie_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('bibliographie', bibliographie_id=bibliographie.bibliographie_id))
+            return redirect(url_for('main_bp.bibliographie', bibliographie_id=bibliographie.bibliographie_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/modif_bibliographie.html")
@@ -198,7 +198,7 @@ def modif_bibliotheque(bibliothecae_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('library', bibliothecae_id=bibliotheque.bibliothecae_id))
+            return redirect(url_for('main_bp.library', bibliothecae_id=bibliotheque.bibliothecae_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/modif_bibliotheque.html")
@@ -351,7 +351,7 @@ def modif_edition(edition_id):
 
         if status is True:
             flash('Merci de votre contribution', 'success')
-            return redirect(url_for('issue', edition_id=edition.edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=edition.edition_id))
 
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
@@ -396,7 +396,7 @@ def ajout_exemplaire(identifier):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('issue', edition_id=edition.edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=edition.edition_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/ajout_exemplaire.html")
@@ -436,7 +436,7 @@ def modif_exemplaire(exemplaire_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('exemplar', exemplaire_id=exemplaire.exemplaire_id))
+            return redirect(url_for('main_bp.exemplar', exemplaire_id=exemplaire.exemplaire_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/modif_exemplaire.html", bibliotheques=bibliotheques)
@@ -475,7 +475,7 @@ def ajout_provenance(exemplaire_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('exemplar', exemplaire_id=exemplaire.exemplaire_id))
+            return redirect(url_for('main_bp.exemplar', exemplaire_id=exemplaire.exemplaire_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/ajout_provenance.html", exemplaire=exemplaire)
@@ -507,7 +507,7 @@ def modif_provenance(provenance_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
+            return redirect(url_for('main_bp.exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/modif_provenance.html")
@@ -540,7 +540,7 @@ def ajout_reference(edition_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('issue', edition_id=edition.edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=edition.edition_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/ajout_reference.html")
@@ -567,7 +567,7 @@ def modif_reference(reference_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('issue', edition_id=unique_reference.reference_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_reference.reference_edition_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/modif_reference.html", bibliographies=bibliographies)
@@ -597,7 +597,7 @@ def ajout_citation(edition_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('issue', edition_id=edition.edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=edition.edition_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/ajout_citation.html")
@@ -621,7 +621,7 @@ def modif_citation(citation_id):
         )
         if statut is True:
             flash("Enregistrement effectué", "success")
-            return redirect(url_for('issue', edition_id=unique_citation.citation_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_citation.citation_edition_id))
         else:
             flash("Les erreurs suivantes ont été rencontrées : " + ",".join(donnees), "error")
             return render_template("pages/modif_citation.html")
@@ -721,7 +721,7 @@ def suppression_edition(edition_id):
             return redirect(url_for("main_bp.accueil"))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect(url_for('issue', edition_id=unique_edition.edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_edition.edition_id))
 
 
 @main_bp.route("/suppression_bibliographie/<int:bibliographie_id>", methods=["GET", "POST"])
@@ -754,10 +754,10 @@ def suppression_citation(citation_id):
         status = Citation.delete_citation(citation_id=citation_id)
         if status is True:
             flash("La citation a été supprimée !", "success")
-            return redirect(url_for('issue', edition_id=unique_citation.citation_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_citation.citation_edition_id))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect(url_for('issue', edition_id=unique_citation.citation_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_citation.citation_edition_id))
 
 
 @main_bp.route("/suppression_bibliotheque/<int:bibliothecae_id>", methods=["GET", "POST"])
@@ -772,7 +772,7 @@ def suppression_bibliotheque(bibliothecae_id):
             return redirect(url_for("main_bp.accueil"))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect(url_for('library', bibliothecae_id=unique_bibliotheque.bibliothecae_id))
+            return redirect(url_for('main_bp.library', bibliothecae_id=unique_bibliotheque.bibliothecae_id))
 
 
 @main_bp.route("/suppression_exemplaire/<int:exemplaire_id>", methods=["GET", "POST"])
@@ -784,10 +784,10 @@ def suppression_exemplaire(exemplaire_id):
         status = Exemplaire.delete_exemplaire(exemplaire_id=exemplaire_id)
         if status is True:
             flash("Un exemplaire a été supprimé !", "success")
-            return redirect(url_for('issue', edition_id=unique_exemplaire.exemplaire_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_exemplaire.exemplaire_edition_id))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect(url_for('exemplar', exemplaire_id=unique_exemplaire.exemplaire_id))
+            return redirect(url_for('main_bp.exemplar', exemplaire_id=unique_exemplaire.exemplaire_id))
 
 
 @main_bp.route("/suppression_provenance/<int:provenance_id>", methods=["GET", "POST"])
@@ -799,10 +799,10 @@ def suppression_provenance(provenance_id):
         status = Provenance.delete_provenance(provenance_id=provenance_id)
         if status is True:
             flash("Une provenance a été supprimée !", "success")
-            return redirect(url_for('exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
+            return redirect(url_for('main_bp.exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect(url_for('exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
+            return redirect(url_for('main_bp.exemplar', exemplaire_id=unique_provenance.provenance_exemplaire_id))
 
 
 @main_bp.route("/suppression_reference/<int:reference_id>", methods=["GET", "POST"])
@@ -814,10 +814,10 @@ def suppression_reference(reference_id):
         status = Reference.delete_reference(reference_id=reference_id)
         if status is True:
             flash("Une référence a été supprimée !", "success")
-            return redirect(url_for('issue', edition_id=unique_reference.reference_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_reference.reference_edition_id))
         else:
             flash("La suppression a échoué.", "danger")
-            return redirect(url_for('issue', edition_id=unique_reference.reference_edition_id))
+            return redirect(url_for('main_bp.issue', edition_id=unique_reference.reference_edition_id))
 
 
 @main_bp.route("/register", methods=["GET", "POST"])
