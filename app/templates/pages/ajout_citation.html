@@ -21,7 +21,6 @@
     <div class="col-6 col-sm-6">
       <div class="input-group" >
      <select class="selectpicker form-control" id="dbname" name="dbname">
-         <option></option>
        {% for catalogue in catalogues %}
         <option value="{{ catalogue.catalogue_id}}">{{catalogue.catalogue_nom_abrege}} </option>
         {% endfor %}

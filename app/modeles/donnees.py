@@ -75,7 +75,7 @@ class Edition(db.Model):
         if len(erreurs) > 0:
             return False, erreurs
         """ 
-        :param short_title : titre court de l'édition
+        :param short_title: titre court de l'édition
         :param title_notes : les notes sur le titre
         :param uniform_title : titre uniforme
         :param full_title : titre entier
@@ -125,7 +125,7 @@ class Edition(db.Model):
         :type user_id : int
         :type short_title, title_notes, uniform_title, full_title, author_first, author_second, publisher, prefaceur, nomRejete, translator, dateInferred, displayDate, cleanDate, languages, placeInferred, place, placeClean, place2, country, format, formatNotes, imprint, signatures, PpFf, remarks, colophon, illustrated, typographicMaterial, sheets, typeNotes, fb, correct, locFingerprints, stcnFingerprints, tpt, notes, printer, urlImage, class0, class1, class2, digital, fulltext, tpimage, privelege, dedication, reference, citation: str
 
-        returns : Booléen
+        :returns : Booléen
         S'il y a une erreur, la fonction renvoie False suivi d'une liste d'erreurs.
         Sinon, elle renvoie True, suivi de l'objet mis à jour (ici personne).
         """
@@ -249,7 +249,7 @@ class Edition(db.Model):
                 :type user_id : int
                 :type short_title, title_notes, uniform_title, full_title, author_first, author_second, publisher, prefaceur, nomRejete, translator, dateInferred, displayDate, cleanDate, languages, placeInferred, place, placeClean, place2, country, format, formatNotes, imprint, signatures, PpFf, remarks, colophon, illustrated, typographicMaterial, sheets, typeNotes, fb, correct, locFingerprints, stcnFingerprints, tpt, notes, printer, urlImage, class0, class1, class2, digital, fulltext, tpimage, privelege, dedication, reference, citation: str
 
-                returns : Booléen
+                :returns : Booléen
                 S'il y a une erreur, la fonction renvoie False suivi d'une liste d'erreurs.
                 Sinon, elle renvoie True, suivi de l'objet mis à jour (ici personne).
                """
@@ -442,8 +442,6 @@ class Bibliothecae(db.Model):
     @staticmethod
     def modif_bibliotheque(id, library, adresse, ville, pays, web):
 
-        bibliotheques = Bibliothecae.query.get(id)
-
         """
         On modifie les données sur bibliothèque
         :param id: l'identifiant de la bibliothèque
@@ -456,7 +454,7 @@ class Bibliothecae(db.Model):
         :type library, adresse, ville, pays, web: str
         :return : Booleen 
         """
-
+        bibliotheques = Bibliothecae.query.get(id)
         bibliotheques.bibliothecae_library=library,
         bibliotheques.bibliothecae_web = web,
         bibliotheques.bibliothecae_adresse = adresse,
@@ -564,7 +562,7 @@ class Exemplaire(db.Model):
             exemplaire_reliure_reliureXVI=reliureXVI,
             exemplaire_relieAvec = relieAvec,
             exemplaire_edition_id=edition_id,
-            exemplaire_bibliothecae_id=bibliothecae_id,
+            exemplaire_bibliothecae_id=bibliothecae_id if len(bibliothecae_id) > 0 else None,
             exemplaire_user_id = user_id
         )
         print(exemplars)
@@ -656,10 +654,6 @@ class Exemplaire(db.Model):
             return False
 
 
-
-    
-
-
 class Reference(db.Model):
     reference_id = db.Column(db.Integer, unique=True, nullable=False, primary_key=True, autoincrement=True)
     reference_volume = db.Column(db.Text)
@@ -689,7 +683,7 @@ class Reference(db.Model):
             reference_page=page,
             reference_recordNumber=recordNumber,
             reference_note=note,
-            reference_bibliographie_id=bibliographie_id,
+            reference_bibliographie_id=bibliographie_id if len(bibliographie_id) > 0 else None,
             reference_edition_id=edition_id,
 
         )
@@ -875,7 +869,7 @@ class Citation(db.Model):
             citation_dbnumber=dbnumber,
             citation_url=url,
             citation_edition_id=edition_id,
-            citation_catalogue_id=catalogue_id
+            citation_catalogue_id=catalogue_id if len(catalogue_id) > 0 else None,
         )
         print(citations)
         try:
@@ -976,7 +970,7 @@ class Provenance(db.Model):
         :type exlibris, exdono, envoi, notesManuscrites, armesPeintes, restitue, mentionEntree, estampillesCachets, possesseur, possesseur_formeRejetee, notes, reliure_provenance: str
         :type exemplaire_id : int
         :return : Booleen
-            """
+        """
         provenances=Provenance(
              provenance_exLibris = exlibris,
              provenance_exDono = exdono,
@@ -1106,7 +1100,7 @@ class Catalogue(db.Model):
 
     @staticmethod
     def modif_catalogue(id, nom, nom_abrege, site):
-        """On modofie une provenance
+        """On modifie une provenance
             :param id : identifiant de catalogue
             :param nom : nom de catalogue
             :param nom_abrege: nom abrégé de catalogue

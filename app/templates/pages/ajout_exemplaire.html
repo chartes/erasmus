@@ -22,7 +22,6 @@
     <div class="col-6 col-sm-6">
       <div class="input-group" >
      <select class="selectpicker form-control" id="library" placeholder="library" name="library">
-         <option></option>
        {% for bibliotheque in bibliotheques %}
         <option value="{{ bibliotheque.bibliothecae_id}}">{{bibliotheque.bibliothecae_library}}</option>
         {% endfor %}
@@ -88,6 +87,12 @@
     <label for="stcnFingerprint" class="col-sm-2 col-form-label">Empreinte STCN</label>
     <div class="col-sm-6">
       <input type="text" class="form-control" id="stcnFingerprint" placeholder="stcnFingerprint" name="stcnFingerprint">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="annotationManuscrite" class="col-sm-2 col-form-label">Annotation manuscrite</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="annotationManuscrite" placeholder="annotationManuscrite" name="annotationManuscrite">
     </div>
   </div>
 <div class="form-group row">

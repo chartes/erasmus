@@ -14,7 +14,6 @@
 
             }
             .container .hero {
-                background-image: url({{url_for("static", filename="images/paper.jpeg")}});
                 font-family: Georgia;
             }
         </style>
@@ -22,35 +21,35 @@
     <body>
 
       <nav class="navbar navbar-expand-md navbar-dark bg-dark justify-content-between">
-        <a class="navbar-brand" href="{{ url_for('accueil') }}">Erasmus</a>
+        <a class="navbar-brand" href="{{ url_for('main_bp.accueil') }}">Erasmus</a>
 
         <ul class="navbar-nav mr-auto">
 
 
             <ul class="nav navbar-nav navbar-right">
                 {% if not current_user.is_authenticated %}
-                <li class="nav-item"><a class="nav-link" href="{{url_for("recherche_avancee")}}">Recherche</a></li>
-                  <li class="nav-item"><a class="nav-link" href="{{url_for("connexion")}}">Connexion</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{url_for("main_bp.recherche_avancee")}}">Recherche</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{{url_for("main_bp.connexion")}}">Connexion</a></li>
 
                 {%else%}
-                <li class="nav-item"><a class="nav-link" href="{{url_for("recherche_avancee")}}">Recherche</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{url_for("inscription")}}">Inscription</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{url_for("deconnexion")}}">Déconnexion ({{current_user.user_nom}})</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{url_for("main_bp.recherche_avancee")}}">Recherche</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{url_for("main_bp.inscription")}}">Inscription</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{url_for("main_bp.deconnexion")}}">Déconnexion ({{current_user.user_nom}})</a></li>
                 <div class="dropdown open">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Ajout
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="{{url_for("creer_edition")}}">Ajout d'édition</a>
-                        <a class="dropdown-item" href="{{url_for("ajout_bibliotheque")}}">Ajout de bibliothèque</a>
-                        <a class="dropdown-item" href="{{url_for("ajout_bibliographie")}}">Ajout de bibliographie</a>
-                        <a class="dropdown-item" href="{{url_for("ajout_catalogue")}}">Ajout de catalogue</a>
+                        <a class="dropdown-item" href="{{url_for("main_bp.creer_edition")}}">Ajout d'édition</a>
+                        <a class="dropdown-item" href="{{url_for("main_bp.ajout_bibliotheque")}}">Ajout de bibliothèque</a>
+                        <a class="dropdown-item" href="{{url_for("main_bp.ajout_bibliographie")}}">Ajout de bibliographie</a>
+                        <a class="dropdown-item" href="{{url_for("main_bp.ajout_catalogue")}}">Ajout de catalogue</a>
                     </div>
                 </div>
                 {%endif%}
             </ul>
         </ul>
-        <form class="form-inline" action="{{url_for("recherche_rapide")}}" method="GET">
+        <form class="form-inline" action="{{url_for("main_bp.recherche_rapide")}}" method="GET">
           <input class="form-control" name="keyword" type="search" placeholder="Recherche rapide" aria-label="Recherche">
           <button class="btn btn-info" type="submit">Rechercher</button>
         </form>
@@ -75,8 +74,8 @@
             </div>
         </div>
       </div>
-    	<script src="../static/js/jquery.js"></script>
-				<script src="../static/js/popper.js"></script>
-				<script src="../static/js/bootstrap.js"></script>
+    	<script src="url_for('static', filename='js/jquery.js')"></script>
+				<script src="url_for('static', filename='js/popper.js')"></script>
+				<script src="url_for('static', filename='js/bootstrap.js')"></script>
     </body>
 </html>
