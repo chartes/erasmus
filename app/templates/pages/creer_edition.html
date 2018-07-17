@@ -101,11 +101,10 @@
     <label for="cleanDate" class="col-sm-2 col-form-label">Date propre</label>
     <div class="input-group">
      <select class="selectpicker form-control" id="cleanDate" name="cleanDate">
-       <option></option>
+       <option>9999</option>
        {% for date in dates %}
         <option>{{date}}</option>
         {% endfor %}
-        <option>9999</option>
      </select>
     </div>
   </div>

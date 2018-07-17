@@ -4,13 +4,11 @@
 
 {% block corps %}
 
-<h1 style="font-family: Georgia;">Édition d'Erasmus</h1>
+<h1 style="font-family: Georgia;">Exemplaire d'Erasmus</h1>
 <p style="font-family: Georgia;">Complétez le formulaire et cliquez sur "Enregistrer".</p>
     <form class="container"  method="GET" class="col-8 col-sm-8"  action="{{url_for("main_bp.ajout_exemplaire", identifier=edition.edition_id)}}" style="font-family: Georgia;">
 
     <div class="form-group row">
-
-
         <div class="col-6 col-sm-6">
       <div class="col-sm-6">
         <input type="hidden" class="form-control" id="idEdition" name="idEdition" value="{{edition.edition_id}}">
@@ -24,7 +22,6 @@
     <div class="col-6 col-sm-6">
       <div class="input-group" >
      <select class="selectpicker form-control" id="library" placeholder="library" name="library">
-         <option></option>
        {% for bibliotheque in bibliotheques %}
         <option value="{{ bibliotheque.bibliothecae_id}}">{{bibliotheque.bibliothecae_library}}</option>
         {% endfor %}
@@ -90,6 +87,12 @@
     <label for="stcnFingerprint" class="col-sm-2 col-form-label">Empreinte STCN</label>
     <div class="col-sm-6">
       <input type="text" class="form-control" id="stcnFingerprint" placeholder="stcnFingerprint" name="stcnFingerprint">
+    </div>
+  </div>
+<div class="form-group row">
+    <label for="annotationManuscrite" class="col-sm-2 col-form-label">Annotation manuscrite</label>
+    <div class="col-sm-6">
+      <input type="text" class="form-control" id="annotationManuscrite" placeholder="annotationManuscrite" name="annotationManuscrite">
     </div>
   </div>
 <div class="form-group row">

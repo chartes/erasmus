@@ -21,7 +21,6 @@
     <div class="col-6 col-sm-6">
       <div class="input-group" >
      <select class="selectpicker form-control" id="oeuvre" placeholder="oeuvre" name="oeuvre">
-         <option></option>
        {% for bibliographie in bibliographies %}
         <option value="{{ bibliographie.bibliographie_id}}">{{bibliographie.bibliographie_author}} "{{bibliographie.bibliographie_title}}"</option>
         {% endfor %}

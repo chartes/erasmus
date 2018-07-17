@@ -12,7 +12,7 @@
     {% if issue %}
     <div style="font-family: Georgia;">
         <h3 style="color:RGB(65, 105, 225); margin-top: 2.5em; margin-bottom: 1em;">{{issue.edition_short_title}}</h3>
-        {% if issue.edition_uniform_title != None %}
+        {% if issue.edition_uniform_title != "None" and issue.edition_uniform_title %}
         <h5>[{{issue.edition_uniform_title}}]</h5>
         {% endif %}
         <p><b>Auteur principal:</b>  {{issue.edition_author_first}}</p>
@@ -219,20 +219,13 @@
         {%endif%}
     </tr>
 </table>
-         <!-- <a style="width: 20%; height: 2em;" class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_citation', citation_id=citation.citation_id)}}" role="button">Modifier</a></button>
-           <a style="width: 20%; height: 2em;" class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_citation', citation_id=citation.citation_id) }}" role="button">Supprimer</a> -->
 
       </div>
     </div>
   </div>
 
 </div>
-      <!--  <tr>
-            <td width="130", valign="top">{{citation.citation_dbname}}</td>
-            <td width="130", valign="top">{{citation.citation_dbnumber}}</td>
-            <td width="130", valign="top"><a href="{{citation.citation_url}}">{{citation.citation_url}}</a></td>
-        <td width="100"><a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_citation', citation_id=citation.citation_id)}}" role="button">Modifier</a></td>
-            <td width="100"><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_citation', citation_id=citation.citation_id) }}" role="button">Supprimer</a></td></tr>-->
+
         {% endfor %}
         {%else%}
         <p>Il n'y a pas de citations</p>
@@ -241,17 +234,13 @@
                 <p style="padding-top: 45px;"><a class="btn btn-outline-info btn-sm" role="button" href="{{url_for('main_bp.ajout_citation', edition_id = issue.edition_id)}}">Ajout citation</a></p>
         {%endif%}
         </div>
-    {% if issue.edition_urlImage %}
+    {% if issue.edition_urlImage and issue.edition_urlImage != "None"%}
 
             <div class="col-4 col-sm-4">
-    <img src="{{issue.edition_urlImage}}" width="250"
-        height="100" border="0" alt="éditions">
+    <img src="{{issue.edition_urlImage}}" width=130%
+        height=45% border="0" alt="éditions">
 </div>
-    {%elif issue.edition_urlImage == "None"%}
-    <div class="col-4 col-sm-4">
-    <img src="{{url_for("static", filename="images/erasmus.jpeg")}}" width="450"
-        height="650" border="0" alt="Erasmus Desiderius">
-</div>
+
     {%else%}
 
 <div class="col-4 col-sm-4">
