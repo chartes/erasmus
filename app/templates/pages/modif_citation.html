@@ -9,26 +9,16 @@
 <p style="font-family: Georgia;">Complétez le formulaire et cliquez sur "Contribuer" pour modifier les données sur une citation.</p>
 
 <form class="form" method="POST" class="col-8 col-sm-8" action="{{url_for("main_bp.modif_citation", citation_id=citation.citation_id)}}" style="font-family: Georgia;">
-     <div class="form-group row">
+
+<div class="form-group row">
     <label for="dbname" class="col-sm-2 col-form-label">Nom de base</label>
     <div class="col-6 col-sm-6">
       <div class="input-group" >
-     <select class="selectpicker form-control" id="dbname" placeholder="dbname" name="dbname">
-         <option value="{{citation.citation_dbname}}">{{citation.citation_dbname}}</option>
-         <option>Erasmus Online</option>
-         <option>ESTC</option>
-         <option>GLN15-16</option>
-         <option>USTC</option>
-         <option>VD 16</option>
-         <option>EDIT 16</option>
-         <option>Lyon 15-16</option>
-         <option>ISTC</option>
-         <option>BP 16</option>
-         <option>FB</option>
-         <option>NB</option>
-         <option>IB</option>
-         <option>GW</option>
-         <option>STCN</option>
+     <select class="selectpicker form-control" id="dbname" name="dbname">
+         <option value="{{citation.catalogue.catalogue_id}}">{{citation.catalogue.catalogue_nom_abrege}} </option>
+       {% for catalogue in catalogues %}
+        <option value="{{ catalogue.catalogue_id}}">{{catalogue.catalogue_nom_abrege}} </option>
+        {% endfor %}
      </select>
     </div>
   </div>

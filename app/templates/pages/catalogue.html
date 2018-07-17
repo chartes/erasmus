@@ -1,0 +1,45 @@
+{% extends "conteneur.html" %}
+
+{% block titre %}
+    {%if  catalogue %}| Catalogue : {{catalogue.catalogue_nom_abrege}} {% endif %}
+{% endblock %}
+
+{% block corps %}
+<div style="font-family: Georgia;">
+    {% if catalogue %}
+        <h1>{{catalogue.catalogue_nom_abrege}}</h1>
+
+    <table>
+            <tr>
+                <h4 style=" margin-top: 3.5em; margin-bottom: 1em; background-color: RGB(135, 206, 250); text-align:left">DONNÉES SUR CATALOGUE</h4>
+            </tr>
+            <tr>
+                <td><b>Nom de catalogues:</b> </td>
+                <td>{{catalogue.catalogue_nom}}</td>
+            </tr>
+             <tr>
+                <td width="130"><b>Nom abrégé: </b></td>
+                <td>{{catalogue.catalogue_nom_abrege}}</td>
+            </tr>
+            {% if catalogue.catalogue_site %}
+            <tr>
+                <td width="130"><b>Site: </b></td>
+                <td>{{catalogue.catalogue_site}}</td>
+            </tr>
+            {% endif %}
+        <tr>
+            {% if current_user.is_authenticated %}
+            <td> <a class="btn btn-outline-primary btn-sm" href="{{url_for('main_bp.modif_catalogue', catalogue_id = catalogue.catalogue_id)}}" role="button">Modifier </a></td>
+        <td><a class="btn btn-outline-danger btn-sm" href="{{ url_for('main_bp.suppression_catalogue', catalogue_id = catalogue.catalogue_id) }}" role="button">Supprimer</a></td>
+        {% endif %}
+        </tr>
+
+
+    </table>
+
+    {% else %}
+        <p>La base de données est en cours de constitution</p>
+    {% endif %}
+
+    <p><a href="{{url_for('main_bp.accueil')}}">Retour à l'accueil</a></p></div>
+{% endblock %}
